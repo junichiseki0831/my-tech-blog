@@ -16,19 +16,27 @@ services:
       - db
 
   db:
-    image: mysql:8.0.27
+    # image: mysql:8.0.27
     container_name: db
+    build:
+      context: .
+      dockerfile: ./db/Dockerfile
+    tty: true
     env_file:
       - .env
     ports:
       - "3306:3306"
     volumes:
-      - db:/var/lib/mysql
+      # 初期データを投入するSQLが格納されているdir
+      - ./db/init:/docker-entrypoint-initdb.d
+      # 永続化するときにマウントするdir
+      - ./db/data:/var/lib/mysql
+    command: mysqld --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
     networks:
       - golang_test_network
 
-volumes:
-  db:
+# volumes:
+#   db:
 networks:
   golang_test_network:
     external: true
