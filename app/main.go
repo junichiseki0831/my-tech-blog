@@ -27,6 +27,7 @@ func createMux() *echo.Echo {
 	e.Use(middleware.Gzip())
 
   e.Static("/css", "css")
+  e.Static("/js", "js")
 
 	return e
 }
