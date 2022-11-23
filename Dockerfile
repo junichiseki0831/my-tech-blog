@@ -5,3 +5,4 @@ WORKDIR /go/src/app
 ADD ./app /go/src/app
 
 RUN go get -u github.com/go-sql-driver/mysql
+RUN go install -tags mysql github.com/golang-migrate/migrate/v4/cmd/migrate@latest
