@@ -6,12 +6,17 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge" />
     <title>{% block title %}MyTechBlog{% endblock %}</title>
 
+    <link rel="stylesheet" href="https://unpkg.com/ress/dist/ress.min.css" />
+
+    <link rel="stylesheet" href="/css/layout.css" />
     {% block css %}{% endblock %}
   </head>
 
   <body>
     <header>
-      <h1><a href="/">MyTechBlog</a></h1>
+      <div class="header">
+        <a class="header__logo" href="/">My Tech Blog</a>
+      </div>
     </header>
 
     <main>
@@ -19,7 +24,16 @@
     </main>
 
     <footer>
-
+      <div class="footer">
+        <ul class="footer__menu">
+          <li class="footer__menu-item"><a href="">GitHub</a></li>
+          <li class="footer__menu-item"><a href="">プライバシーポリシー</a></li>
+          <li class="footer__menu-item"><a href="">運営者</a></li>
+        </ul>
+        <div class="footer__copy-right">
+          © 2022 ○○○○
+        </div>
+      </div>
     </footer>
 
     {% block js %}{% endblock %}
