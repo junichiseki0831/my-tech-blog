@@ -3,24 +3,10 @@ package repository
 import (
     "database/sql"
     "time"
+    "math"
 
 	"my-tech-blog/model"
 )
-
-// ArticleList ...
-func ArticleList() ([]*model.Article, error) {
-  // 実行SQL
-	query := `SELECT * FROM articles;`
-
-  // データベースから取得した値を格納する変数を宣言
-	var articles []*model.Article
-  // Query を実行して、取得した値を変数に格納
-	if err := db.Select(&articles, query); err != nil {
-		return nil, err
-	}
-
-	return articles, nil
-}
 
 // ArticleCreate ...
 func ArticleCreate(article *model.Article) (sql.Result, error) {
@@ -55,4 +41,30 @@ func ArticleCreate(article *model.Article) (sql.Result, error) {
 
   // SQL の実行結果を返却
   return res, nil
+}
+
+// ArticleListByCursor ...
+func ArticleListByCursor(cursor int) ([]*model.Article, error) {
+	// 引数で渡されたカーソルの値が 0 以下の場合は、代わりに int 型の最大値で置き換え
+	if cursor <= 0 {
+		cursor = math.MaxInt32
+	}
+
+	// ID の降順に記事データを 10 件取得するクエリ文字列を生成
+	query := `SELECT *
+	FROM articles
+	WHERE id < ?
+	ORDER BY id desc
+	LIMIT 10`
+
+	// クエリ結果を格納するスライスを初期化
+	// 10 件取得すると決まっているため、サイズとキャパシティを指定
+	articles := make([]*model.Article, 0, 10)
+
+	// クエリ結果を格納する変数、クエリ文字列、パラメータを指定してクエリを実行
+	if err := db.Select(&articles, query, cursor); err != nil {
+		return nil, err
+	}
+
+	return articles, nil
 }
