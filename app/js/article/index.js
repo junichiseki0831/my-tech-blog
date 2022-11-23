@@ -4,6 +4,9 @@
 document.addEventListener('DOMContentLoaded', () => {
   // DOM API を利用して HTML 要素を取得
   const deleteBtns = document.querySelectorAll('.articles__item-delete');
+  const moreBtn = document.querySelector('.page__more');
+  const articles = document.querySelector('.articles');
+  const articleTmpl = document.querySelector('.articles__item-tmpl').firstElementChild;
 
   // CSRF トークンを取得
   const csrfToken = document.getElementsByName('csrf')[0].content;
@@ -13,7 +16,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let statusCode;
 
     // Fetch API を利用して削除リクエストを送信
-    fetch(`/${id}`, {
+    fetch(`/api/articles/${id}`, {
       method: 'DELETE',
       headers: { 'X-CSRF-Token': csrfToken }
     })
@@ -40,4 +43,73 @@ document.addEventListener('DOMContentLoaded', () => {
       deleteArticle(elm.dataset.id);
     });
   }
+
+  // もっとみるボタンにイベントリスナーを設定
+  moreBtn.addEventListener('click', event => {
+    event.preventDefault();
+
+    // もっとみるボタンのカスタムデータ属性からカーソルの値を取得
+    const cursor = moreBtn.dataset.cursor;
+
+    // カーソルが取得できない場合や 0 以下の数値だった場合は、もっとみるボタンを画面から削除して処理を終了
+    if (!cursor || cursor <= 0) {
+      moreBtn.remove();
+      return;
+    }
+
+    // Fetch API を利用して非同期リクエストを実行
+    let statusCode;
+    fetch(`/api/articles?cursor=${cursor}`)
+      .then(res => {
+        statusCode = res.status;
+        return res.json();
+      })
+      .then(data => {
+        console.log(JSON.stringify(data));
+        // リクエストに成功し、記事一覧データが配列で返ってきた場合
+        if (statusCode == 200 && Array.isArray(data)) {
+          // 表示する記事がこれ以上存在しない場合は、もっとみるボタンを画面から削除して処理を終了
+          if (data.length == 0) {
+            moreBtn.remove();
+            return;
+          }
+
+          // 記事の HTML 要素をまとめるためのフラグメントを作成（記事のリスト）
+          const fragment = document.createDocumentFragment();
+
+          // 記事一覧データをループで処理
+          data.forEach(article => {
+            // 個々の記事の HTML 要素を格納するフラグメントを作成（個別記事）
+            const frag = document.createDocumentFragment();
+
+            // 記事の HTML 要素のテンプレートからクローンを作成し、フラグメントの子要素として追加
+            frag.appendChild(articleTmpl.cloneNode(true));
+
+            // 記事の各 HTML 要素に対して、クラス・属性値・テキストを設定
+            frag.querySelector('article').classList.add(`articles__item-${article.id}`);
+            frag.querySelector('.articles__item').setAttribute('href', `/articles/${article.id}`);
+            frag.querySelector('.articles__item-title').textContent = article.title;
+            frag.querySelector('.articles__item-date').textContent = article.created.split('T')[0]; //+年-月-日のみを抽出
+
+            // デリートボタンに対して、カスタムデータ属性やイベントリスナーを設定
+            const deleteBtnElm = frag.querySelector('.articles__item-delete');
+            deleteBtnElm.dataset.id = article.id;
+            deleteBtnElm.addEventListener('click', event => {
+              event.preventDefault();
+              deleteArticle(article.id);
+            });
+
+            // 記事リストのフラグメントの子要素として個別記事のフラグメントを追加
+            fragment.appendChild(frag);
+          });
+
+          // もっとみるボタンのカスタムデータ属性に設定してあるカーソルの値を更新
+          moreBtn.dataset.cursor = data[data.length - 1].id;
+
+          // 記事一覧の HTML 要素の子要素に記事リストのフラグメントを追加して画面に表示
+          articles.appendChild(fragment);
+        }
+      })
+      .catch(err => console.error(err));
+  });
 });

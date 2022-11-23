@@ -14,6 +14,11 @@ import (
 
 // ArticleIndex ...
 func ArticleIndex(c echo.Context) error {
+  // "/articles" のパスでリクエストがあったら "/" にリダイレクト
+  if c.Request().URL.Path == "/articles" {
+    c.Redirect(http.StatusPermanentRedirect, "/")
+  }
+
 	// リポジトリの処理を呼び出して記事の一覧データを取得
 	articles, err := repository.ArticleListByCursor(0)
 
@@ -26,9 +31,16 @@ func ArticleIndex(c echo.Context) error {
 		return c.NoContent(http.StatusInternalServerError)
 	}
 
+  // 取得できた最後の記事の ID をカーソルとして設定
+  var cursor int
+  if len(articles) != 0 {
+    cursor = articles[len(articles)-1].ID
+  }
+
 	// テンプレートに渡すデータを map に格納
 	data := map[string]interface{}{
 		"Articles": articles,
+    "Cursor":   cursor,
 	}
 
 	// テンプレートファイルとデータを指定して HTML を生成し、クライアントに返却
@@ -47,7 +59,7 @@ func ArticleNew(c echo.Context) error {
 
 // ArticleShow ...
 func ArticleShow(c echo.Context) error {
-	id, _ := strconv.Atoi(c.Param("id"))
+  id, _ := strconv.Atoi(c.Param("articleID"))
 
 	data := map[string]interface{}{
 		"Message": "Article Show",
@@ -60,7 +72,7 @@ func ArticleShow(c echo.Context) error {
 
 // ArticleEdit ...
 func ArticleEdit(c echo.Context) error {
-	id, _ := strconv.Atoi(c.Param("id"))
+	id, _ := strconv.Atoi(c.Param("articleID"))
 
 	data := map[string]interface{}{
 		"Message": "Article Edit",
@@ -134,7 +146,7 @@ func ArticleCreate(c echo.Context) error {
 func ArticleDelete(c echo.Context) error {
 	// パスパラメータから記事 ID を取得
 	// 文字列型で取得されるので、strconv パッケージを利用して数値型にキャスト
-	id, _ := strconv.Atoi(c.Param("id"))
+	id, _ := strconv.Atoi(c.Param("articleID"))
 
 	// repository の記事削除処理を呼び出し
 	if err := repository.ArticleDelete(id); err != nil {
@@ -147,4 +159,29 @@ func ArticleDelete(c echo.Context) error {
 
 	// 成功時はステータスコード 200 を返却
 	return c.JSON(http.StatusOK, fmt.Sprintf("Article %d is deleted.", id))
+}
+
+// ArticleList ...
+func ArticleList(c echo.Context) error {
+	// クエリパラメータからカーソルの値を取得
+	// 文字列型で取得できるので strconv パッケージを用いて数値型にキャスト
+	cursor, _ := strconv.Atoi(c.QueryParam("cursor"))
+
+	// リポジトリの処理を呼び出して記事の一覧データを取得
+	// 引数にカーソルの値を渡して、ID のどの位置から 10 件取得するかを指定
+	articles, err := repository.ArticleListByCursor(cursor)
+
+	// エラーが発生した場合
+	if err != nil {
+		// サーバーのログにエラー内容を出力
+		c.Logger().Error(err.Error())
+
+		// クライアントにステータスコード 500 でレスポンスを返す
+		// HTML ではなく JSON 形式でデータのみを返却するため、c.HTMLBlob() ではなく c.JSON() を呼び出し
+		return c.JSON(http.StatusInternalServerError, "")
+	}
+
+	// エラーがない場合は、ステータスコード 200 でレスポンスを返す
+	// JSON 形式で返却するため、c.HTMLBlob() ではなく c.JSON() を呼び出し
+	return c.JSON(http.StatusOK, articles)
 }
