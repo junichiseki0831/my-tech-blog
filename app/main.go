@@ -21,14 +21,23 @@ func main() {
   db = connectDB()
   repository.SetDB(db)
 
+  // TOP ページに記事の一覧を表示
   e.GET("/", handler.ArticleIndex)
-  e.GET("/new", handler.ArticleNew)
-  e.GET("/:id", handler.ArticleShow)
-  e.GET("/:id/edit", handler.ArticleEdit)
-  e.POST("/", handler.ArticleCreate)
-  e.DELETE("/:id", handler.ArticleDelete)
 
-	e.Logger.Fatal(e.Start(":8080"))
+  // 記事に関するページは "/articles" で開始する
+  // 記事一覧画面には "/" と "/articles" の両方でアクセスできるようにする
+  e.GET("/articles", handler.ArticleIndex)         // 一覧画面
+  e.GET("/articles/new", handler.ArticleNew)       // 新規作成画面
+  e.GET("/articles/:articleID", handler.ArticleShow)      // 詳細画面
+  e.GET("/articles/:articleID/edit", handler.ArticleEdit) // 編集画面
+
+  // HTML ではなく JSON を返却する処理は "/api" で開始する
+  // 記事に関する処理なので "/articles"
+  e.GET("/api/articles", handler.ArticleList)          // 一覧
+  e.POST("/api/articles", handler.ArticleCreate)       // 作成
+  e.DELETE("/api/articles/:articleID", handler.ArticleDelete) // 削除
+
+  e.Logger.Fatal(e.Start(":8080"))
 }
 
 func createMux() *echo.Echo {
