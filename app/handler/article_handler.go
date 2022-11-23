@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"strconv"
 	"time"
+  "strings"
 
   "my-tech-blog/model"
 	"my-tech-blog/repository"
@@ -85,14 +86,27 @@ func ArticleShow(c echo.Context) error {
 
 // ArticleEdit ...
 func ArticleEdit(c echo.Context) error {
+	// パスパラメータから記事 ID を取得
+	// 文字列型で取得されるので、strconv パッケージを利用して数値型にキャスト
 	id, _ := strconv.Atoi(c.Param("articleID"))
 
-	data := map[string]interface{}{
-		"Message": "Article Edit",
-		"Now":     time.Now(),
-		"ID":      id,
+	// 編集フォームの初期値として表示するために記事データを取得
+	article, err := repository.ArticleGetByID(id)
+
+	if err != nil {
+		// エラー内容をサーバーのログに出力
+		c.Logger().Error(err.Error())
+
+		// ステータスコード 500 でレスポンスを返却
+		return c.NoContent(http.StatusInternalServerError)
 	}
 
+	// テンプレートに渡すデータを map に格納
+	data := map[string]interface{}{
+		"Article": article,
+	}
+
+	// テンプレートファイルとデータを指定して HTML を生成し、クライアントに返却
 	return render(c, "article/edit.html", data)
 }
 
@@ -125,7 +139,7 @@ func ArticleCreate(c echo.Context) error {
     // エラーの内容をサーバーのログに出力
     c.Logger().Error(err.Error())
 
-    // エラー内容を検査してカスタムエラーメッセージを取得します。
+    // エラー内容を検査してカスタムエラーメッセージを取得
     out.ValidationErrors = article.ValidationErrors(err)
 
     // 解釈できたパラメータが許可されていない値の場合は 422 エラーを返却
@@ -197,4 +211,72 @@ func ArticleList(c echo.Context) error {
 	// エラーがない場合は、ステータスコード 200 でレスポンスを返す
 	// JSON 形式で返却するため、c.HTMLBlob() ではなく c.JSON() を呼び出し
 	return c.JSON(http.StatusOK, articles)
+}
+
+// ArticleUpdateOutput ...
+type ArticleUpdateOutput struct {
+	Article          *model.Article
+	Message          string
+	ValidationErrors []string
+}
+
+// ArticleUpdate ...
+func ArticleUpdate(c echo.Context) error {
+	// リクエスト送信元のパスを取得
+	ref := c.Request().Referer()
+
+	// リクエスト送信元のパスから記事 ID を抽出
+	refID := strings.Split(ref, "/")[4]
+
+	// リクエスト URL のパスパラメータから記事 ID を抽出
+	reqID := c.Param("articleID")
+
+	// 編集画面で表示している記事と更新しようとしている記事が異なる場合は、更新処理をせずに 400 エラーを返却
+	if reqID != refID {
+		return c.JSON(http.StatusBadRequest, "")
+	}
+
+	// フォームで送信される記事データを格納する構造体を宣言
+	var article model.Article
+
+	// レスポンスするデータの構造体を宣言
+	var out ArticleUpdateOutput
+
+	// フォームで送信されたデータを変数に格納
+	if err := c.Bind(&article); err != nil {
+		// リクエストのパラメータの解釈に失敗した場合は 400 エラーを返却
+		return c.JSON(http.StatusBadRequest, out)
+	}
+
+	// 入力値のチェック（バリデーションチェック）
+	if err := c.Validate(&article); err != nil {
+		// エラー内容をレスポンスのフィールドに格納
+		out.ValidationErrors = article.ValidationErrors(err)
+
+		// 解釈できたパラメータが不正な値の場合は 422 エラーを返却
+		return c.JSON(http.StatusUnprocessableEntity, out)
+	}
+
+	// 文字列型の ID を数値型にキャスト
+	articleID, _ := strconv.Atoi(reqID)
+
+	// フォームデータを格納した構造体に ID をセット
+	article.ID = articleID
+
+	// 記事を更新する処理を呼び出す
+	_, err := repository.ArticleUpdate(&article)
+
+	if err != nil {
+		// レスポンスの構造体にエラー内容をセット
+		out.Message = err.Error()
+
+		// リクエスト自体は正しいにも関わらずサーバー側で処理が失敗した場合は 500 エラーを返却
+		return c.JSON(http.StatusInternalServerError, out)
+	}
+
+	// レスポンスの構造体に記事データをセット
+	out.Article = &article
+
+	// 処理成功時はステータスコード 200 でレスポンスを返却
+	return c.JSON(http.StatusOK, out)
 }
