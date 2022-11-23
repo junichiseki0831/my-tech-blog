@@ -14,6 +14,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // 新規作成画面か編集画面かを URL から判定
   const mode = { method: '', url: '' };
+  // CSRF トークンを取得します。
+  const csrfToken = document.getElementsByName('csrf')[0].content;
   if (window.location.pathname.endsWith('new')) {
     // 新規作成時の HTTP メソッドは POST
     mode.method = 'POST';
@@ -69,5 +71,39 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // URL を指定して画面を遷移
     window.location.href = url;
+  });
+
+  // 保存処理を実行するイベントを設定
+  saveBtn.addEventListener('click', event => {
+    event.preventDefault();
+
+    // フォームに入力された内容を取得
+    const fd = new FormData(form);
+
+    let status;
+
+    // fetch API を利用してリクエストを送信
+    fetch(url, {
+      method: method,
+      headers: { 'X-CSRF-Token': csrfToken },
+      body: fd
+    })
+      .then(res => {
+        status = res.status;
+        return res.json();
+      })
+      .then(body => {
+        console.log(JSON.stringify(body));
+
+        if (status === 200) {
+          // 成功時は一覧画面に遷移
+          window.location.href = url;
+        }
+
+        if (body.ValidationErrors) {
+          // バリデーションエラーがある場合
+        }
+      })
+      .catch(err => console.error(err));
   });
 });
