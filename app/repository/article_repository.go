@@ -89,3 +89,25 @@ func ArticleDelete(id int) error {
 	// エラーがない場合はコミット
 	return tx.Commit()
 }
+
+// ArticleGetByID ...
+func ArticleGetByID(id int) (*model.Article, error) {
+	// クエリ文字列を生成
+	query := `SELECT *
+	FROM articles
+	WHERE id = ?;`
+
+	// クエリ結果を格納する変数を宣言
+	// 複数件取得の場合はスライス、一件取得の場合は構造体
+	var article model.Article
+
+	// 結果を格納する構造体、クエリ文字列、パラメータを指定して SQL を実行
+	// 複数件の取得の場合は db.Select() 、一件取得の場合は db.Get()
+	if err := db.Get(&article, query, id); err != nil {
+		// エラーが発生した場合はエラーを返却
+		return nil, err
+	}
+
+	// エラーがない場合は記事データを返却
+	return &article, nil
+}
