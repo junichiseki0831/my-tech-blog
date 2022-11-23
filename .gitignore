@@ -17,3 +17,4 @@
 .env
 .DS_Store
 db/data/*
+app/tmp/*
