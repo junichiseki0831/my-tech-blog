@@ -26,6 +26,7 @@ func main() {
   e.GET("/:id", handler.ArticleShow)
   e.GET("/:id/edit", handler.ArticleEdit)
   e.POST("/", handler.ArticleCreate)
+  e.DELETE("/:id", handler.ArticleDelete)
 
 	e.Logger.Fatal(e.Start(":8080"))
 }
