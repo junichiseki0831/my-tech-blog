@@ -1,11 +1,17 @@
 {% extends "../layout.html" %}
 
 {% block css %}
+<link rel="stylesheet" href="/css/vendor/prism.css" />
 <link rel="stylesheet" href="/css/article/new.css" />
 <link rel="stylesheet" href="/css/article/_form.css" />
+<link rel="stylesheet" href="/css/article/_article.css" />
 {% endblock %}
 
 {% block js %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/remarkable/2.0.0/remarkable.min.js"></script>
+<script src="/js/vendor/prism.js"></script>
+<script src="/js/module/parser.js"></script>
+<script src="/js/module/form.js"></script>
 <script src="/js/article/new.js"></script>
 {% endblock %}
 
