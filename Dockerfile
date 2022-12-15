@@ -1,15 +1,18 @@
 # https://hub.docker.com/_/golang
 FROM golang:1.18.1-alpine
 
-EXPOSE 8080
+ENV ROOT=/go/src/app
+ENV CGO_ENABLED 0
+WORKDIR ${ROOT}
 
 RUN apk update && apk add git
-RUN mkdir /go/src/app
-WORKDIR /go/src/app
-COPY ./app /go/src/app
+COPY ./app ./
+RUN go mod tidy
+RUN go mod download
+RUN go build main.go
 
-RUN go get -u github.com/go-sql-driver/mysql && \
-    go install -tags mysql github.com/golang-migrate/migrate/v4/cmd/migrate@latest && \
-    go install github.com/cosmtrek/air@v1.27.3
+# RUN go get -u github.com/go-sql-driver/mysql && \
+#     go install -tags mysql github.com/golang-migrate/migrate/v4/cmd/migrate@latest && \
+#     go install github.com/cosmtrek/air@v1.27.3
 
-CMD ["air"]
+CMD ["./main"]
