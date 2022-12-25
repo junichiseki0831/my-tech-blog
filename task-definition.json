@@ -1,5 +1,5 @@
 {
-  "taskDefinitionArn": "arn:aws:ecs:ap-northeast-1:083272645243:task-definition/mytechblog:20",
+  "family": "mytechblog",
   "containerDefinitions": [
       {
           "name": "go",
@@ -46,53 +46,9 @@
           "systemControls": []
       }
   ],
-  "family": "mytechblog",
   "taskRoleArn": "arn:aws:iam::083272645243:role/ecsTaskExecutionRole",
   "executionRoleArn": "arn:aws:iam::083272645243:role/ecsTaskExecutionRole",
   "networkMode": "awsvpc",
-  "revision": 20,
-  "volumes": [],
-  "status": "ACTIVE",
-  "requiresAttributes": [
-      {
-          "name": "com.amazonaws.ecs.capability.logging-driver.awslogs"
-      },
-      {
-          "name": "ecs.capability.execution-role-awslogs"
-      },
-      {
-          "name": "com.amazonaws.ecs.capability.ecr-auth"
-      },
-      {
-          "name": "com.amazonaws.ecs.capability.docker-remote-api.1.19"
-      },
-      {
-          "name": "com.amazonaws.ecs.capability.docker-remote-api.1.17"
-      },
-      {
-          "name": "com.amazonaws.ecs.capability.docker-remote-api.1.21"
-      },
-      {
-          "name": "com.amazonaws.ecs.capability.task-iam-role"
-      },
-      {
-          "name": "ecs.capability.execution-role-ecr-pull"
-      },
-      {
-          "name": "ecs.capability.secrets.ssm.environment-variables"
-      },
-      {
-          "name": "com.amazonaws.ecs.capability.docker-remote-api.1.18"
-      },
-      {
-          "name": "ecs.capability.task-eni"
-      }
-  ],
-  "placementConstraints": [],
-  "compatibilities": [
-      "EC2",
-      "FARGATE"
-  ],
   "requiresCompatibilities": [
       "FARGATE"
   ],
@@ -101,16 +57,10 @@
   "runtimePlatform": {
       "operatingSystemFamily": "LINUX"
   },
-  "registeredAt": "2022-12-25T06:07:36.342Z",
-  "registeredBy": "arn:aws:iam::083272645243:user/sekiadmin",
   "tags": [
       {
           "key": "ecs:taskDefinition:createdFrom",
           "value": "ecs-console-v2"
-      },
-      {
-          "key": "ecs:taskDefinition:stackId",
-          "value": "arn:aws:cloudformation:ap-northeast-1:083272645243:stack/ECS-Console-V2-TaskDefinition-9270bc4c-b104-49af-969f-3394ea9bd4c3/740bdcc0-8320-11ed-88fe-0ae1c32f1ebf"
       }
   ]
 }
