@@ -38,7 +38,7 @@ func main() {
   e.DELETE("/api/articles/:articleID", handler.ArticleDelete) // 削除
   e.PATCH("/api/articles/:articleID", handler.ArticleUpdate)  // 更新
 
-  e.Logger.Fatal(e.Start(":8080"))
+  e.Logger.Fatal(e.Start(":80"))
 }
 
 func createMux() *echo.Echo {
