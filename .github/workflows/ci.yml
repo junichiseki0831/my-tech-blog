@@ -7,13 +7,12 @@ jobs:
   setup:
     runs-on: ubuntu-latest
     steps:
-      - name: set up
-        uses: actions/setup-go@v2
+      - uses: actions/checkout@v3
+
+      - name: Set up Go
+        uses: actions/setup-go@v3
         with:
-          go-version: ^1.18
-        id: go
-      - name: check out
-        uses: actions/checkout@v2
+          go-version: 1.18
 
       # 処理を高速化するために環境をキャッシュ
       - name: Cache
@@ -24,31 +23,31 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-go-
 
-  # # buildテスト
-  # build:
-  #   needs: setup
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - uses: actions/checkout@v2
-  #     - name: build
-  #       run: go build ./...
+  # buildテスト
+  build:
+    needs: setup
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: build
+        run: go build .
 
   # testを通す
   test:
     needs: setup
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: test
-        run: go test ./... -v
+        run: go test . -v
 
   # lintを通す
   lint:
     needs: setup
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: golangci-lint
-        uses: golangci/golangci-lint-action@v2
+        uses: golangci/golangci-lint-action@v3
         with:
           version: v1.29
