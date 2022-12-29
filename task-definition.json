@@ -29,7 +29,7 @@
               {
                 "name": "TEST",
                 "valueFrom": "test-parameter"
-              },
+              }
           ],
           "dnsServers": [],
           "dnsSearchDomains": [],
