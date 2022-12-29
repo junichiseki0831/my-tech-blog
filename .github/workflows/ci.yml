@@ -15,9 +15,8 @@ jobs:
           go-version: 1.18
       - name: Install dependencies
         run: |
-          go get ./app
-          go get example.com/octo-examplemodule
-          go get example.com/octo-examplemodule@v1.3.4
+            cd /app
+            go mod tidy
 
       # 処理を高速化するために環境をキャッシュ
       - name: Cache
