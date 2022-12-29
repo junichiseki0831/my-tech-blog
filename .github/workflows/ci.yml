@@ -23,14 +23,14 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-go-
 
-  # buildテスト
-  build:
-    needs: setup
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - name: build
-        run: go build ./app/main.go
+  # # buildテスト
+  # build:
+  #   needs: setup
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: actions/checkout@v3
+  #     - name: build
+  #       run: go build ./app/main.go
 
   # testを通す
   test:
@@ -39,7 +39,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: test
-        run: go test . -v
+        run: go test -v ./app/test/...
 
   # lintを通す
   lint:
