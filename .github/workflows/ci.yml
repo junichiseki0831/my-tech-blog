@@ -1,53 +1,26 @@
-name: go-ci
+name: Go package
 
 on: [push]
 
 jobs:
-  # 共通処理
-  setup:
+  build:
     runs-on: ubuntu-latest
+
     steps:
       - uses: actions/checkout@v3
-
-      - name: Set up Go
+      - name: Set up Go 1.19.1
         uses: actions/setup-go@v3
         with:
-          go-version: 1.18
+          go-version: '1.16.1'
+          cache: true
+      - name: Install dependencies
+        run: |
+          go get .
+          go get example.com/octo-examplemodule
+          go get example.com/octo-examplemodule@v1.3.4
 
-      # 処理を高速化するために環境をキャッシュ
-      - name: Cache
-        uses: actions/cache@v2.1.0
-        with:
-          path: ~/go/pkg/mod
-          key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
-          restore-keys: |
-            ${{ runner.os }}-go-
+      - name: Build
+        run: go build -v ./...
 
-  # # buildテスト
-  # build:
-  #   needs: setup
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - uses: actions/checkout@v3
-  #     - name: build
-  #       run: go build ./app/main.go
-
-  # # testを通す
-  # test:
-  #   needs: setup
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - uses: actions/checkout@v3
-  #     - name: test
-  #       run: go test -v ./app/test/...
-
-  # # lintを通す
-  # lint:
-  #   needs: setup
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - uses: actions/checkout@v3
-  #     - name: golangci-lint
-  #       uses: golangci/golangci-lint-action@v3
-  #       with:
-  #         version: v1.29
+      - name: Test
+        run: go test -v ./...
