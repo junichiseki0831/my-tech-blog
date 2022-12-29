@@ -14,6 +14,7 @@ jobs:
           go-version: '1.19.1'
       - name: Install dependencies
         run: |
+          cd ./app
           go get .
           go get example.com/octo-examplemodule
           go get example.com/octo-examplemodule@v1.3.4
