@@ -15,7 +15,7 @@ jobs:
           go-version: 1.18
       - name: Install dependencies
         run: |
-            cd /app
+            cd ./app
             go mod tidy
 
       # 処理を高速化するために環境をキャッシュ
