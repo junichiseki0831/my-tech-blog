@@ -16,7 +16,6 @@ jobs:
         run: |
           cd ./app
           go get .
-          go get example.com/octo-examplemodule
 
       - name: Build
         run: go build -v ./app/...
