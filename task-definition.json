@@ -25,7 +25,11 @@
               {
                   "name": "DSN",
                   "valueFrom": "data-source-name"
-              }
+              },
+              {
+                "name": "TEST",
+                "valueFrom": "test-parameter"
+              },
           ],
           "dnsServers": [],
           "dnsSearchDomains": [],
