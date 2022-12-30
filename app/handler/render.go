@@ -7,7 +7,7 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-const tmplPath = "template/"
+const tmplPath = "front/template/"
 
 func htmlBlob(file string, data map[string]interface{}) ([]byte, error) {
 	return pongo2.Must(pongo2.FromCache(tmplPath + file)).ExecuteBytes(data)
