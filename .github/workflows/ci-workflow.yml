@@ -1,4 +1,4 @@
-name: Go package
+name: CI flow for My Tech Blog
 
 on: [push]
 
