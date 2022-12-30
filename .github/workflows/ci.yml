@@ -3,7 +3,7 @@ name: Go package
 on: [push]
 
 env:
-  SLACK_WEBHOOK: https://hooks.slack.com/services/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
+  SLACK_WEBHOOK: https://hooks.slack.com/services/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
 
 jobs:
   ci:
