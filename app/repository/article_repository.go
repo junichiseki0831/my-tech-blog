@@ -5,7 +5,7 @@ import (
     "time"
     "math"
 
-	"my-tech-blog/model"
+	"my-tech-blog/app/model"
 )
 
 // ArticleCreate ...

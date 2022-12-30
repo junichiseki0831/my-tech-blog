@@ -4,8 +4,8 @@ import (
   "log"
   "os"
 
-  "my-tech-blog/handler"
-  "my-tech-blog/repository"
+  "my-tech-blog/app/handler"
+  "my-tech-blog/app/repository"
 
   _ "github.com/go-sql-driver/mysql" // Using MySQL driver
   "github.com/jmoiron/sqlx"
