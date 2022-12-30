@@ -49,8 +49,8 @@ func createMux() *echo.Echo {
 	e.Use(middleware.Gzip())
   e.Use(middleware.CSRF())
 
-  e.Static("/css", "css")
-  e.Static("/js", "js")
+  e.Static("/css", "front/css")
+  e.Static("/js", "front/js")
 
   e.Validator = &CustomValidator{validator: validator.New()}
 
