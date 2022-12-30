@@ -7,8 +7,8 @@ import (
 	"time"
   "strings"
 
-  "my-tech-blog/model"
-	"my-tech-blog/repository"
+  "my-tech-blog/app/model"
+	"my-tech-blog/app/repository"
 
 	"github.com/labstack/echo/v4"
 )

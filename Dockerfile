@@ -5,7 +5,7 @@ ENV CGO_ENABLED 0
 WORKDIR ${ROOT}
 
 RUN apk update && apk add git
-COPY ./app/go.mod ./app/go.sum ./
+COPY ./go.mod ./go.sum ./
 RUN go mod download
 COPY ./app ./
 RUN go build main.go
