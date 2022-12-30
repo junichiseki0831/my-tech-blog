@@ -1,4 +1,4 @@
-name: Deploy to Amazon ECS
+name: Cd flow for My Tech Blog
 
 on:
   pull_request:
