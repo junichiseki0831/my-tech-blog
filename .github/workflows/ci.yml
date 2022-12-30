@@ -6,7 +6,8 @@ env:
   SLACK_WEBHOOK: https://hooks.slack.com/services/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
 
 jobs:
-  build:
+  ci:
+    name: ci
     runs-on: ubuntu-latest
     timeout-minutes: 10
 
