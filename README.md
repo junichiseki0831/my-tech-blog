@@ -1,11 +1,13 @@
 # my-tech-blog
 
 # URL
-http://test.url/
+https://mytechblog.link/
 
 
 # 使用技術
 - go 1.19.1
+  - echo v4.9.1
+  - sqlx v1.3.5
 - MySQL 8.0.28
 - AWS
   - VPC
